@@ -1,38 +1,34 @@
-import { Component } from 'react';
+import { useEffect } from 'react';
 import s from './Modal.module.css';
 import PropTypes from 'prop-types';
 
-class Modal extends Component {
-  static propTypes = {
-    onClose: PropTypes.func.isRequired,
-  };
-  componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyDown);
-  }
+const Modal = ({ onClose, children }) => {
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyDown);
-  }
-
-  handleKeyDown = e => {
+  const handleKeyDown = e => {
     if (e.code === 'Escape') {
-      this.props.onClose();
+      onClose();
     }
   };
 
-  handleClicOverlay = e => {
+  const handleClicOverlay = e => {
     if (e.target === e.currentTarget) {
-      this.props.onClose();
+      onClose();
     }
   };
 
-  render() {
-    return (
-      <div className={s.overlay} onClick={this.handleClicOverlay}>
-        <div className={s.modalCont}>{this.props.children}</div>
-      </div>
-    );
-  }
-}
+  return (
+    <div className={s.overlay} onClick={handleClicOverlay}>
+      <div className={s.modalCont}>{children}</div>
+    </div>
+  );
+};
+
+Modal.propTypes = {
+  onClose: PropTypes.func.isRequired,
+};
 
 export default Modal;
